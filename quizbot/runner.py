@@ -16,7 +16,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 def log_error(update: Update, context):
-    update.message.reply_text(f'Error: {context.error}')
     LOGGER.fatal(context.error, exc_info=True)
 
 

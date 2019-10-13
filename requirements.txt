@@ -1,1 +1,2 @@
 python-telegram-bot[socks]==12.1.1
+pymongo==3.9.0

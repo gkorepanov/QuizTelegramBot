@@ -10,7 +10,17 @@ services:
       SOCKS5_PROXY_PASSWORD: "yyyxy7fg"
       USE_TELEGRAM_WEBHOOK: "false"
       TELEGRAM_TOKEN: "904055101:AAFnuJeIITnfegzGzxhrTad-Yd71cZpzNok"
+      MONGO_HOST: "mongo"
+      MONGO_PORT: "27017"
     restart: always
     volumes:
-      - "./data:/usr/src/app/data"
+      - "./data/bot_data:/usr/src/app/data"
+    links:
+      - mongo
 
+  mongo:
+    image: mongo:4.2
+    ports:
+      - "27017:27017"
+    volumes:
+      - "./data/mongodb_data:/data/db"

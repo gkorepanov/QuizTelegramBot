@@ -21,3 +21,6 @@ venv/
 # Ignore build artifacts
 build/
 **/*.so
+
+# Ignore data files
+data/**
