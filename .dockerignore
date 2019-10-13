@@ -1,0 +1,23 @@
+# Ignore version control files:
+.git/
+.gitignore
+
+# Ignore Docker and environment files
+**/*.env
+Dockerfile
+.dockerignore
+
+# Ignore Python-generated files
+**/__pycache__/
+
+# Ignore OS artifacts:
+**/.DS_Store
+
+# Ignore virtual environment
+.env/
+.venv/
+venv/
+
+# Ignore build artifacts
+build/
+**/*.so

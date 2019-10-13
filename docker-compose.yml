@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+  site:
+    image: quizbot
+    environment:
+      DEBUG: "true"
+      USE_SOCKS5_PROXY: "true"
+      SOCKS5_PROXY: "socks5h://138.68.75.100:8888"
+      SOCKS5_PROXY_USER: "proxyuser"
+      SOCKS5_PROXY_PASSWORD: "yyyxy7fg"
+      USE_TELEGRAM_WEBHOOK: "false"
+      TELEGRAM_TOKEN: "904055101:AAFnuJeIITnfegzGzxhrTad-Yd71cZpzNok"
+    restart: always
+

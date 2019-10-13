@@ -1,0 +1,1 @@
+python-telegram-bot[socks]==12.1.1
