@@ -1,6 +1,10 @@
-from telegram.ext import CommandHandler, ConversationHandler, MessageHandler
+from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, InlineQueryHandler
 from telegram.ext import Filters
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import InputTextMessageContent, InlineQueryResultArticle
+from telegram import ParseMode
+from telegram.utils.helpers import escape_markdown
+from uuid import uuid4
 
 
 class State:
@@ -18,7 +22,11 @@ def start(update, context):
 def add_post(update, context):
     update.message.reply_text("Great, I've got a post content from you! "
                               "Now add buttons with /addbutton command.")
+
+    context.user_data['text'] = None
+    context.user_data['photo'] = None
     context.user_data['buttons'] = []
+
     if update.message.photo:
         context.user_data['photo'] = update.message.photo[-1]
     else:
@@ -48,25 +56,37 @@ def add_button_reply(update, context):
 
 def finish_post_creation(update, context):
     if context.user_data['buttons']:
-        keyboard = [InlineKeyboardButton(button['text'], callback_data=str(i))
-                    for i, button in enumerate(context.user_data['buttons'])]
-
-        keyboard.append(InlineKeyboardButton('Publish to channel',
-                                             callback_data='#some_id',
-                                             switch_inline_query=True))
-
-        markup = InlineKeyboardMarkup(keyboard)
+        keyboard = [[InlineKeyboardButton(button['text'], callback_data=str(i))
+                    for i, button in enumerate(context.user_data['buttons'])]]
     else:
-        markup = None
+        keyboard = []
 
-    if 'text' in context.user_data:
+    keyboard.append([InlineKeyboardButton('Publish to channel',
+                                          switch_inline_query='#some_id')])
+
+    markup = InlineKeyboardMarkup(keyboard)
+
+    if context.user_data['text']:
         update.message.reply_text(context.user_data['text'], reply_markup=markup)
-    elif 'photo' in context.user_data:
+    elif context.user_data['photo']:
         update.message.reply_photo(context.user_data['photo'], reply_markup=markup)
     else:
         raise ValueError("No data to create post found")
 
     return State.WAITING_POST
+
+
+def inlinequery(update, context):
+    query = update.inline_query.query
+    results = [
+        InlineQueryResultArticle(
+            id=query,
+            title="New post",
+            description='Create new post with text `bla-bla`',
+            input_message_content=InputTextMessageContent(
+                query.upper()))]
+
+    update.inline_query.answer(results)
 
 
 def cancel(update, context):
@@ -75,10 +95,8 @@ def cancel(update, context):
     return State.WAITING_POST
 
 
-start_handler = CommandHandler('start', start)
-
-
 conv_handler = ConversationHandler(
+    name='post_creating_handler',
     entry_points=[CommandHandler('start', start)],
     states={
         State.WAITING_POST: [MessageHandler(Filters.text | Filters.photo, add_post)],
@@ -88,5 +106,11 @@ conv_handler = ConversationHandler(
         State.WAITING_BUTTON_REPLY: [MessageHandler(Filters.text, add_button_reply)]
     },
     persistent=True,
-    fallbacks=[CommandHandler('cancel', cancel)]
+    fallbacks=[CommandHandler('cancel', cancel),
+               MessageHandler(Filters.text, cancel),
+               CommandHandler('start', start)]
 )
+
+inline_handler = InlineQueryHandler(inlinequery)
+
+handlers = [inline_handler, conv_handler]

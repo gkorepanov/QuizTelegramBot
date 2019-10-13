@@ -7,7 +7,7 @@ import os
 # Custom imports
 import quizbot.runner
 from quizbot.utils import str2bool
-from quizbot.handlers import start_handler
+from quizbot.handlers import handlers
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
@@ -17,4 +17,4 @@ if __name__ == '__main__':
     if str2bool(os.environ.get('USE_TELEGRAM_WEBHOOK', 'False')):
         raise NotImplementedError()
     else:
-        quizbot.runner.run_get_updates(token=token, handlers=[start_handler])
+        quizbot.runner.run_get_updates(token=token, handlers=handlers)
