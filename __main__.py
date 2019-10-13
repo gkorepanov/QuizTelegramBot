@@ -9,7 +9,8 @@ import quizbot.runner
 from quizbot.utils import str2bool
 from quizbot.handlers import start_handler
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 if __name__ == '__main__':
     token = os.environ['TELEGRAM_TOKEN']
