@@ -11,4 +11,6 @@ services:
       USE_TELEGRAM_WEBHOOK: "false"
       TELEGRAM_TOKEN: "904055101:AAFnuJeIITnfegzGzxhrTad-Yd71cZpzNok"
     restart: always
+    volumes:
+      - "./data:/usr/src/app/data"
 

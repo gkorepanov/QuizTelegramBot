@@ -5,8 +5,8 @@ from typing import Dict, List, Callable, Optional
 
 # Telegram imports
 from telegram.ext import Updater
-from telegram import Update, Bot
-from telegram.error import TelegramError
+from telegram.ext import PicklePersistence
+from telegram import Update
 
 # Custom imports
 from quizbot.utils import str2bool
@@ -15,9 +15,9 @@ from quizbot.utils import str2bool
 LOGGER = logging.getLogger(__name__)
 
 
-def log_error(bot: Bot, update: Update, error: TelegramError):
-    update.message.reply_text(f'Error: {error}')
-    LOGGER.fatal(error, exc_info=True)
+def log_error(update: Update, context):
+    update.message.reply_text(f'Error: {context.error}')
+    LOGGER.fatal(context.error, exc_info=True)
 
 
 def get_socks_proxy_params() -> Optional[Dict]:
@@ -37,11 +37,13 @@ def get_socks_proxy_params() -> Optional[Dict]:
 
 def run_get_updates(token: str, handlers: List[Callable]) -> None:
     proxy_params = get_socks_proxy_params()
+    persistence = PicklePersistence('/usr/src/app/data/persistence.pkl')
+
     if proxy_params is not None:
         LOGGER.warning(f"Using SOCKS5 proxy:\n{proxy_params}")
-        updater = Updater(token, request_kwargs=proxy_params)
-    else:
-        updater = Updater(token)
+
+    updater = Updater(token, request_kwargs=proxy_params,
+                      use_context=True, persistence=persistence)
 
     dp = updater.dispatcher
 
