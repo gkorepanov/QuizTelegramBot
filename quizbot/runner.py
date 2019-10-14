@@ -36,7 +36,7 @@ def get_socks_proxy_params() -> Optional[Dict]:
 
 def run_get_updates(token: str, handlers: List[Callable]) -> None:
     proxy_params = get_socks_proxy_params()
-    persistence = PicklePersistence('/usr/src/app/data/persistence.pkl')
+    persistence = PicklePersistence(os.environ['PERSISTENCE_DATA_FILE'])
 
     if proxy_params is not None:
         LOGGER.warning(f"Using SOCKS5 proxy:\n{proxy_params}")
