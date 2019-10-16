@@ -1,0 +1,39 @@
+[Unit]
+
+Description=QuizBot
+After=syslog.target
+After=network.target
+After=mongod.service
+Requires=mongod.service
+
+
+[Service]
+WorkingDirectory=/home/gkorepan/QuizTelegramBot
+# Command to execute when the service is started
+ExecStart=/home/gkorepan/QuizTelegramBot/venv/bin/python /home/gkorepan/QuizTelegramBot/__main__.py
+
+# Disable Python's buffering of STDOUT and STDERR, so that output from the
+# service shows up immediately in systemd's logs
+Environment=PYTHONUNBUFFERED=1
+Environment=DEBUG=false
+Environment=USE_SOCKS5_PROXY=false
+Environment=USE_TELEGRAM_WEBHOOK=false
+Environment=PERSISTENCE_DATA_FILE=/data/quiz_bot_data/persistence.pkl
+Environment=MONGO_HOST=localhost:27017
+EnvironmentFile=/home/gkorepan/QuizTelegramBot/.keys
+
+# Automatically restart the service if it crashes
+Restart=on-failure
+
+Type=simple
+
+# Use a dedicated user to run service
+User=quiz_bot_service
+
+TimeoutSec=300
+
+[Install]
+
+# Tell systemd to automatically start this service when the system boots
+# (assuming the service is enabled)
+WantedBy=multi-user.target
