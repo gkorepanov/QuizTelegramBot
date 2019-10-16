@@ -2,7 +2,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from telegram import InputTextMessageContent
 from telegram import InlineQueryResultArticle, InlineQueryResultCachedPhoto
-from telegram import Update
+from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
 
 import quizbot.handlers.post as postutils
@@ -154,4 +154,23 @@ def cancel_post_creation(update: Update, context: CallbackContext) -> str:
 
 
 def show_stats(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Not implemented yet. Please, approach developer.")
+    user_id = db.models.find_or_create_user(update.effective_user.id)
+    posts_count = db.models.total_user_posts(user_id)
+
+    if posts_count == 0:
+        update.message.reply_text("You have no posts yet!")
+        return
+
+    clicks_count, correct_clicks_count = db.models.count_user_posts_clicks(user_id)
+    average_clicks_per_post = float(clicks_count) / posts_count
+
+    if clicks_count == 0:
+        average_correct_percentage = 0
+    else:
+        average_correct_percentage = float(correct_clicks_count) / clicks_count
+
+    update.message.reply_text(f"Statistics of your posts:\n"
+                              f"  - *Total number*: {posts_count}\n"
+                              f"  - *Average users answers per post*: {average_clicks_per_post}\n"
+                              f"  - *Average correct answers*: {average_correct_percentage:.0%}",
+                              parse_mode=ParseMode.MARKDOWN)

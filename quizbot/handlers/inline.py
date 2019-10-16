@@ -23,7 +23,17 @@ def process_inline_button_click(update: Update, context: CallbackContext) -> Non
 
 
 def show_post_statistics(query: CallbackQuery, post_id: ObjectId) -> None:
-    query.answer(text="Функция в разработке. Обратитесь к разработчику.", show_alert=True)
+    try:
+        post = db.models.find_post(post_id)
+    except:
+        LOGGER.error(f"Could not find post {post_id} on statistics button click")
+        query.answer(text="Post has not been found. "
+                          "Approach the developer.", show_alert=False)
+        return
+
+    clicks_count, correct_clicks_count = db.models.count_post_clicks(post)
+    query.answer(text=f"Правильных ответов: {correct_clicks_count} / {clicks_count}",
+                 show_alert=True)
 
 
 def process_quiz_button_click(update: Update, post_id: ObjectId, button_text: str) -> None:
