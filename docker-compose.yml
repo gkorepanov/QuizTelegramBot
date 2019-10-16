@@ -5,8 +5,8 @@ services:
     env_file:
       - ".keys"
     environment:
-      DEBUG: "true"
-      USE_SOCKS5_PROXY: "true"
+      DEBUG: "false"
+      USE_SOCKS5_PROXY: "false"
       USE_TELEGRAM_WEBHOOK: "false"
       PERSISTENCE_DATA_FILE: "/usr/src/app/data/persistence.pkl"
       MONGO_HOST: "mongo:27017"
