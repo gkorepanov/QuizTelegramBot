@@ -2,17 +2,14 @@ version: '3.3'
 services:
   site:
     image: quizbot
+    env_file:
+      - ".keys"
     environment:
       DEBUG: "true"
       USE_SOCKS5_PROXY: "true"
-      SOCKS5_PROXY: "socks5h://138.68.75.100:8888"
-      SOCKS5_PROXY_USER: "proxyuser"
-      SOCKS5_PROXY_PASSWORD: "yyyxy7fg"
       USE_TELEGRAM_WEBHOOK: "false"
-      TELEGRAM_TOKEN: "904055101:AAFnuJeIITnfegzGzxhrTad-Yd71cZpzNok"
       PERSISTENCE_DATA_FILE: "/usr/src/app/data/persistence.pkl"
       MONGO_HOST: "mongo:27017"
-      # MONGO_HOST: "mongodb+srv://football_quiz_bot:football_quiz_bot@cluster0-wheuq.mongodb.net/test?retryWrites=true&w=majority"
     restart: always
     volumes:
       - "./data/bot_data:/usr/src/app/data"

@@ -24,3 +24,6 @@ build/
 
 # Ignore data files
 data/**
+
+.idea/
+.keys
