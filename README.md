@@ -19,8 +19,9 @@ Bot is written using
  - Python3
 
 ## Setup dev environment
-Dockerfile / docker-compose files are available at the repo, providing
-the quizkest way to run the bot locally / on remote server.
+`Dockerfile` / `docker-compose.yml` files are available at the repo, providing
+the quizkest way to run the bot locally / on remote server via Docker flow.
+
 Create a file named `.keys` with following content:
 ```bash
 TELEGRAM_TOKEN=<YOUR TOKEN>
@@ -34,11 +35,13 @@ SOCKS5_PROXY_USER=<USERNAME>
 SOCKS5_PROXY_PASSWORD=<PASSWORD>
 ```                               
 
+and set `USE_SOCKS5_PROXY` to `true` in `docker-compose.yml`.
+
 ## Deploy to production
 1. Setup [MongoDB](https://docs.mongodb.com/manual/installation/), or run a cloud provided MongoDB cluster.
-2. Symlink systemd config file `ln -s $(`pwd`) /etc/systemd/system/quizbot.service`
+2. Symlink systemd config file ```ln -s $(`pwd`) /etc/systemd/system/quizbot.service```
 3. Create dedicated user for the bot: `sudo useradd -r -s /bin/false quiz_bot_service`
-4. Make sure `/data` directory is writable and has enough space. The data location can be changed in `quizbot.service` file:
+4. Make sure `/data` directory is writable and has enough space. Alternatively, the data location can be changed in `quizbot.service` file:
 
    ```
    ...
