@@ -47,7 +47,7 @@ def process_quiz_button_click(update: Update, post_id: ObjectId, button_text: st
                           "Обратитесь к разработчику.", show_alert=False)
         return
 
-    LOGGER.warning(f"Button `{button_text}` clicked for post: {post}")
+    LOGGER.info(f"Button `{button_text}` clicked for post: {post}")
 
     user_id = db.models.find_or_create_user(update.effective_user.id)
 

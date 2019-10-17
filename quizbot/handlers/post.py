@@ -33,17 +33,18 @@ def get_content_description(post: Dict) -> str:
 
 def make_alert_text(*, initial_text: str,
                     count: int, total_count: int,
-                    is_correct: bool):
+                    is_correct: bool,
+                    show_header: bool = False):
     alert_text = initial_text
 
-    if is_correct:
-        alert_text = '✅ Правильно!\n\n' + alert_text
-    else:
-        alert_text = '❌ Неверно. \n\n' + alert_text
+    if show_header:
+        header = '✅ Правильно!\n\n' if is_correct else '❌ Неверно. \n\n'
+        alert_text = header + alert_text
 
     if total_count:
         alert_text += f'\n\nОтветили так же: {count / total_count:.0%} (из {total_count}).'
     else:
-        alert_text += '\n\nВы ответили первым!'
+        alert_text += ('\n\nВы ответили первым! '
+                       'Зайдите позже, чтобы посмотреть, как ответили другие.')
 
     return alert_text
