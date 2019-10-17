@@ -133,3 +133,9 @@ def count_user_posts_clicks(user_id: ObjectId) -> Tuple[int, int]:
 
 def count_post_clicks(post: Dict) -> Tuple[int, int]:
     return post['clicks_count'], post['correct_clicks_count']
+
+
+def is_post_existing(post_id: ObjectId) -> bool:
+    return get_collection('posts').find_one(
+        {'_id': ObjectId(post_id)}, {}) is not None
+

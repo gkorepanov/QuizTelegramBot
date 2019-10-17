@@ -62,14 +62,21 @@ def process_quiz_button_click(update: Update, post_id: ObjectId, button_text: st
             do_update = False
 
     is_correct = post['buttons'][button_text]['is_correct']
+    count = post['buttons'][button_text]['clicks_count']
+    total_count = post['clicks_count']
 
     if do_update:
         db.models.update_stats_on_click(user_id=user_id, post_id=post_id,
                                         user_answer=button_text, is_correct=is_correct)
+    else:
+        # do not include this user's click into statistics
+        count -= 1
+        total_count -= 1
 
     alert_text = postutils.make_alert_text(initial_text=post['buttons'][button_text]['alert_text'],
-                                           count=post['buttons'][button_text]['clicks_count'],
-                                           total_count=post['clicks_count'],
+                                           count=count,
+                                           total_count=total_count,
                                            is_correct=is_correct)
 
     query.answer(text=alert_text, show_alert=True)
+
