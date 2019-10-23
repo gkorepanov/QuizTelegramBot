@@ -41,10 +41,7 @@ def make_alert_text(*, initial_text: str,
         header = '✅ Правильно!\n\n' if is_correct else '❌ Неверно. \n\n'
         alert_text = header + alert_text
 
-    if total_count:
-        alert_text += f'\n\nОтветили так же: {count / total_count:.0%} (из {total_count}).'
-    else:
-        alert_text += ('\n\nВы ответили первым! '
-                       'Зайдите позже, чтобы посмотреть, как ответили другие.')
+    percentage = count / total_count if total_count else 0
+    alert_text += f'\n\nОтветили так же: {percentage:.0%} (из {total_count}).'
 
     return alert_text
