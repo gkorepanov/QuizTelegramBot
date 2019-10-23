@@ -1,5 +1,6 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telegram import ReplyKeyboardMarkup, KeyboardButton
+from telegram import ReplyKeyboardRemove, ForceReply
 from telegram import InputTextMessageContent
 from telegram import InlineQueryResultArticle, InlineQueryResultCachedPhoto
 from telegram import Update, ParseMode
@@ -19,7 +20,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 def start(update, context: CallbackContext) -> str:
-    update.message.reply_text("Hi! Send me arbitrary post (image or text)!")
+    update.message.reply_text("Hi! Send me arbitrary post (image or text)!",
+                              reply_markup=ForceReply())
     return State.WAITING_POST
 
 
@@ -38,7 +40,7 @@ def start_post_creation(update: Update, context: CallbackContext) -> str:
                 f"exceeds the Telegram API limit. Please, send shorter "
                 f"post text below:"
             )
-            update.message.reply_text(error_text)
+            update.message.reply_text(error_text, reply_markup=ForceReply())
             return State.WAITING_POST
 
         context.user_data['text'] = text
@@ -49,7 +51,7 @@ def start_post_creation(update: Update, context: CallbackContext) -> str:
 
 
 def start_button_creation(update: Update, context: CallbackContext) -> str:
-    update.message.reply_text("Send me the button text!")
+    update.message.reply_text("Send me the button text:", reply_markup=ForceReply())
     return State.WAITING_BUTTON_TEXT
 
 
@@ -62,7 +64,8 @@ def add_button_text(update: Update, context: CallbackContext) -> str:
     }
     context.user_data['button_text'] = update.message.text
     update.message.reply_text("Fine. Now send me the alert text to be shown "
-                              "when the button is pressed by user.")
+                              "when the button is pressed by user:",
+                              reply_markup=ForceReply())
     return State.WAITING_BUTTON_ALERT_TEXT
 
 
@@ -79,7 +82,7 @@ def add_button_alert_text(update: Update, context: CallbackContext) -> str:
             f"-------------------\n\n"
             f"Please, type in the new alert text below:"
         )
-        update.message.reply_text(error_text)
+        update.message.reply_text(error_text, reply_markup=ForceReply())
         return State.WAITING_BUTTON_ALERT_TEXT
 
     button_text = context.user_data['button_text']
@@ -105,7 +108,8 @@ def finish_post_creation(update: Update, context: CallbackContext) -> str:
         update.message.reply_text(f'No such button: {correct_answer}!')
         return State.WAITING_CORRECT_ANSWER
     else:
-        update.message.reply_text('Fine, here is your new post:', reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text('Fine, here is your new post:',
+                                  reply_markup=ReplyKeyboardRemove())
 
     buttons[correct_answer]['is_correct'] = True
     photo = context.user_data['photo']
