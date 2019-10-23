@@ -1,5 +1,8 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple, Optional
 from telegram import InlineKeyboardButton
+
+MAX_TELEGRAM_API_POST_TEXT_LENGTH = 4096
+MAX_TELEGRAM_API_ALERT_TEXT_LENGTH = 200
 
 
 def get_post_keyboard(buttons, post_id) -> List[List[InlineKeyboardButton]]:
@@ -45,3 +48,22 @@ def make_alert_text(*, initial_text: str,
     alert_text += f'\n\nОтветили так же: {percentage:.0%} (из {total_count}).'
 
     return alert_text
+
+
+def is_main_text_valid(text: str) -> bool:
+    if len(text) > MAX_TELEGRAM_API_POST_TEXT_LENGTH:
+        return False
+    return True
+
+
+def is_alert_text_valid(alert_text: str) -> Tuple[bool, Optional[str]]:
+    for _is_correct in [False, True]:
+        for _total_count in [0, 155, 1000]:
+            for _count in [0, _total_count // 2, _total_count]:
+                _text = make_alert_text(initial_text=alert_text,
+                                        count=_count,
+                                        total_count=_total_count,
+                                        is_correct=_is_correct)
+                if len(_text) > MAX_TELEGRAM_API_ALERT_TEXT_LENGTH:
+                    return False, _text
+    return True, None

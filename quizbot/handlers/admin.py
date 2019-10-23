@@ -24,9 +24,6 @@ def start(update, context: CallbackContext) -> str:
 
 
 def start_post_creation(update: Update, context: CallbackContext) -> str:
-    update.message.reply_text("Great, I've got a post content from you! "
-                              "Now add buttons with /addbutton command.")
-
     context.user_data['text'] = None
     context.user_data['photo'] = None
     context.user_data['buttons'] = dict()
@@ -34,7 +31,20 @@ def start_post_creation(update: Update, context: CallbackContext) -> str:
     if update.message.photo:
         context.user_data['photo'] = update.message.photo[-1]
     else:
-        context.user_data['text'] = update.message.text
+        text = update.message.text
+        if not postutils.is_main_text_valid(text):
+            error_text = (
+                f"The length of post text ({len(text)}) "
+                f"exceeds the Telegram API limit. Please, send shorter "
+                f"post text below:"
+            )
+            update.message.reply_text(error_text)
+            return State.WAITING_POST
+
+        context.user_data['text'] = text
+
+    update.message.reply_text("Great, I've got a post content from you! "
+                              "Now add buttons with /addbutton command.")
     return State.EDITING_POST
 
 
@@ -57,8 +67,23 @@ def add_button_text(update: Update, context: CallbackContext) -> str:
 
 
 def add_button_alert_text(update: Update, context: CallbackContext) -> str:
+    alert_text = update.message.text
+    is_alert_text_valid, example = postutils.is_alert_text_valid(alert_text)
+    if not is_alert_text_valid:
+        error_text = (
+            f"The length of resulting message ({len(example)}) "
+            f"exceeds the Telegram API limit. Please, use shorter "
+            f"alert text. The example of resulting message:\n\n"
+            f"-------------------\n"
+            f"{example}\n"
+            f"-------------------\n\n"
+            f"Please, type in the new alert text below:"
+        )
+        update.message.reply_text(error_text)
+        return State.WAITING_BUTTON_ALERT_TEXT
+
     button_text = context.user_data['button_text']
-    context.user_data['buttons'][button_text]['alert_text'] = update.message.text
+    context.user_data['buttons'][button_text]['alert_text'] = alert_text
     update.message.reply_text(f"Great, the button {button_text} added! "
                               f"Now either /addbutton or /finish post creation.")
     return State.EDITING_POST
