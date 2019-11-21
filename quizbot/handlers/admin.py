@@ -142,6 +142,8 @@ def inline_find_post(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
 
     if not query.startswith('#'):
+        update.inline_query.answer([], switch_pm_text='Create new quiz post',
+                                   switch_pm_parameter='_')
         return
 
     post_id = query[1:]
